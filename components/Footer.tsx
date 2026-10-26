@@ -4,6 +4,14 @@ import { useState, useRef, useEffect } from "react";
 
 const CHANGELOG: { date: string; changes: string[] }[] = [
   {
+    date: "Oct 26",
+    changes: [
+      "Copy now leaves out spillover ZIPs, where under 5% of residents live in the district",
+      "New \"Include spillover ZIPs\" switch copies every ZIP that touches a district",
+      "Districts with a ZIP mostly in another state are marked, and the copy message names it",
+    ],
+  },
+  {
     date: "Feb 14",
     changes: ["Add changelog modal to footer"],
   },

@@ -7,13 +7,37 @@ import DistrictView from "@/components/DistrictView";
 import CopyToast from "@/components/CopyToast";
 import Footer from "@/components/Footer";
 
+const SPILLOVER_KEY = "includeSpillover";
+
+function readSpilloverPreference() {
+  try {
+    return localStorage.getItem(SPILLOVER_KEY) === "1";
+  } catch {
+    // Storage unavailable (private mode, blocked site data): use the default
+    return false;
+  }
+}
+
 export default function Home() {
   const [data, setData] = useState<DistrictData | null>(null);
   const [stateUpdates, setStateUpdates] = useState<StateUpdates>({});
   const [loading, setLoading] = useState(true);
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState("");
+  const [toastDetail, setToastDetail] = useState<string | undefined>();
   const [toastVisible, setToastVisible] = useState(false);
+  const [includeSpillover, setIncludeSpillover] = useState(false);
+
+  const toggleSpillover = useCallback(() => {
+    setIncludeSpillover((on) => {
+      try {
+        localStorage.setItem(SPILLOVER_KEY, on ? "0" : "1");
+      } catch {
+        // Not remembered, but the toggle still works for this visit
+      }
+      return !on;
+    });
+  }, []);
 
   useEffect(() => {
     Promise.all([
@@ -23,6 +47,7 @@ export default function Home() {
       .then(([districtData, updates]) => {
         setData(districtData);
         setStateUpdates(updates);
+        setIncludeSpillover(readSpilloverPreference());
         setLoading(false);
       })
       .catch((err) => {
@@ -31,8 +56,9 @@ export default function Home() {
       });
   }, []);
 
-  const handleCopied = useCallback((message: string) => {
+  const handleCopied = useCallback((message: string, detail?: string) => {
     setToastMessage(message);
+    setToastDetail(detail);
     setToastVisible(true);
   }, []);
 
@@ -80,6 +106,9 @@ export default function Home() {
             state={selectedStateData}
             stateFips={selectedState!}
             stateUpdates={stateUpdates}
+            shareThreshold={data.metadata.zip_share_threshold}
+            includeSpillover={includeSpillover}
+            onToggleSpillover={toggleSpillover}
             onBack={() => setSelectedState(null)}
             onCopied={handleCopied}
           />
@@ -95,6 +124,7 @@ export default function Home() {
 
       <CopyToast
         message={toastMessage}
+        detail={toastDetail}
         visible={toastVisible}
         onDismiss={handleDismissToast}
       />

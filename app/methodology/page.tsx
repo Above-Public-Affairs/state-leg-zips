@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Methodology - State Leg ZIPs",
   description:
-    "How State Leg ZIPs maps ZIP codes to state legislative districts using U.S. Census Bureau relationship files.",
+    "How State Leg ZIPs maps ZIP codes to state legislative districts using U.S. Census Bureau relationship files and 2020 block populations.",
   alternates: {
     canonical: "/methodology",
   },
@@ -77,16 +77,64 @@ export default function Methodology() {
             </h2>
             <p>
               The Census Bureau publishes files that show where legislative
-              districts and ZCTAs overlap geographically. If any part of a ZIP
-              code area falls within a legislative district, that ZIP code is
-              included in the district&apos;s list. This means a single ZIP code
-              can appear in multiple districts when it straddles a boundary.
+              districts and ZCTAs overlap geographically. Any ZIP code that
+              touches a district is a candidate for that district, so a single
+              ZIP code can appear in multiple districts when it straddles a
+              boundary.
             </p>
             <p className="mt-2">
-              We intentionally include ZIP codes in all overlapping districts
-              rather than assigning each ZIP to only one. This provides better
-              reach for ad targeting, since you won&apos;t miss voters who live
-              near a district boundary.
+              Touching a district isn&apos;t the same as being worth paying to
+              reach. Many ZIP codes only clip a district&apos;s edge, and some
+              along state lines are almost entirely in another state. So for
+              each ZIP code we count how many of its residents actually live in
+              the district, using 2020 Census block populations.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-semibold text-slate-800 mb-2">
+              Default list and spillover ZIPs
+            </h2>
+            <p>
+              By default, clicking a district copies the ZIP codes where{" "}
+              <strong>at least 5% of the ZIP&apos;s residents live in the
+              district</strong>. Across all districts, this keeps 99.4% of
+              district residents in the copied ZIPs and raises the share of
+              people reached who actually live in the district from 47% to 61%.
+            </p>
+            <p className="mt-2">
+              The rest are <strong>spillover ZIPs</strong>: ZIP codes that touch
+              the district but have under 5% of their residents in it, or have
+              no residents at all. Turn on <em>Include spillover ZIPs</em> to
+              copy every ZIP code that touches the district, as the site did
+              before October 2026. The setting is remembered in your browser.
+            </p>
+            <p className="mt-2">
+              A few ZIP codes that pass the 5% rule have most of their residents
+              in another state, such as Fort Campbell&apos;s 42223, which is
+              mostly in Kentucky but over a third inside Tennessee House District
+              75. We keep these in the list and mark the district with an amber
+              dot. The copy confirmation names the ZIP and its state.
+            </p>
+            <p className="mt-2">
+              The confirmation also shows how many spillover ZIPs were left out
+              and what share of the district&apos;s residents the copied ZIPs
+              reach.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-semibold text-slate-800 mb-2">
+              How residents are counted
+            </h2>
+            <p>
+              Every 2020 census block belongs to at most one ZCTA and, in the
+              Census Bureau&apos;s 2024 block equivalency files, to exactly one
+              legislative district. Adding up block populations gives the exact
+              number of a ZIP&apos;s residents inside each district and each
+              state. Summed by district, these totals match the Census
+              Bureau&apos;s published 2024 district populations exactly for all
+              but two of more than 6,800 districts.
             </p>
           </section>
 
@@ -118,6 +166,11 @@ export default function Methodology() {
                 appropriate for every use case.
               </li>
               <li>
+                Resident shares use the 2020 Census count. They don&apos;t
+                reflect population change since 2020, or how each ad platform
+                maps its users to ZIP codes.
+              </li>
+              <li>
                 Data is as current as the Census Bureau&apos;s latest release.
                 If a state redistricts mid-decade, there may be a lag before
                 updated data is available.
@@ -129,7 +182,7 @@ export default function Methodology() {
             <h2 className="text-base font-semibold text-slate-800 mb-2">
               Source files
             </h2>
-            <p>The raw Census Bureau relationship files used:</p>
+            <p>The raw Census Bureau files used:</p>
             <ul className="list-disc list-inside space-y-1 mt-2">
               <li>
                 <strong>House districts:</strong>{" "}
@@ -143,11 +196,39 @@ export default function Methodology() {
                   tab20_sldu202420_zcta520_natl.txt
                 </code>
               </li>
+              <li>
+                <strong>Blocks to ZCTAs:</strong>{" "}
+                <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">
+                  tab20_zcta520_tabblock20_natl.txt
+                </code>
+              </li>
+              <li>
+                <strong>Blocks to 2024 districts:</strong>{" "}
+                <a
+                  href="https://www2.census.gov/programs-surveys/decennial/rdo/mapping-files/2025/2024-state-legislative-bef/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline hover:text-blue-800"
+                >
+                  2024 state legislative block equivalency files
+                </a>
+              </li>
+              <li>
+                <strong>Block populations:</strong>{" "}
+                <a
+                  href="https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline hover:text-blue-800"
+                >
+                  2020 Census redistricting data (PL 94-171)
+                </a>
+              </li>
             </ul>
             <p className="mt-2">
-              These files are available from the{" "}
+              The relationship files are available from the{" "}
               <a
-                href="https://www2.census.gov/geo/docs/maps-data/data/rel2020/cd-sld/"
+                href="https://www2.census.gov/geo/docs/maps-data/data/rel2020/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 underline hover:text-blue-800"
