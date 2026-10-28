@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.0",
-    "canter-error-reporter": "^0.1.0",
+    "@above-public-affairs/error-reporter": "^0.2.0",
     "next": "16.1.3",
     "react": "19.2.3",
     "react-dom": "19.2.3"

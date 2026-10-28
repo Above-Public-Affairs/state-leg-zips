@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import sgMail from "@sendgrid/mail";
-import { reportError } from "canter-error-reporter";
+import { reportError } from "@above-public-affairs/error-reporter";
 
 export async function POST(request: Request) {
   try {
